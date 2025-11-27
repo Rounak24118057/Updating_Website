@@ -46,7 +46,7 @@ def scrape_top_100():
         print(f"Loop start, currently have {len(song_title)} songs")
 
         webpage = driver.page_source
-        soup = BeautifulSoup(webpage, 'lxml')
+        soup = BeautifulSoup(webpage, 'html.parser')
 
         trending_songs = soup.find_all('music-horizontal-item')
         print(f"Found {len(trending_songs)} items on this view")
