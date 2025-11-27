@@ -1,9 +1,9 @@
 name: Scheduled Scraper
 
 on:
+  workflow_dispatch:    # <‑‑ this line enables the "Run workflow" button
   schedule:
-    - cron: '0 */6 * * *'  # Runs every 6 hours
-
+    - cron: '0 */6 * * *'
 jobs:
   scrape-job:
     runs-on: ubuntu-latest
