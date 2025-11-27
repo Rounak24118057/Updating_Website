@@ -36,7 +36,8 @@ def scrape_top_100():
     while len(song_title) < target_count:
         # Get current page HTML
         webpage = driver.page_source
-        soup = BeautifulSoup(webpage, 'lxml')
+        soup = BeautifulSoup(webpage, 'html.parser')
+
 
         trending_songs = soup.find_all('music-horizontal-item')
 
