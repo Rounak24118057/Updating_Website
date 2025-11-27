@@ -6,17 +6,25 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
-# Path to your ChromeDriver
-driver_path = r"C:\Users\HP\Downloads\chromedriver-win64 (1)\chromedriver-win64\chromedriver.exe"
-service = Service(driver_path)
+def get_driver():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless=new")   # headless for GitHub runner
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    # Do NOT pass a driver_path here – Selenium will download/locate it
+    driver = webdriver.Chrome(options=chrome_options)
+    return driver
 
 # URL to scrape
 url = "https://music.amazon.com/popular/songs"
 
 def scrape_top_100():
     # Start browser
-    driver = webdriver.Chrome(service=service)
+    driver = get_driver()
     driver.get(url)
     time.sleep(5)
 
