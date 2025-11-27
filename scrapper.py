@@ -23,28 +23,36 @@ def get_driver():
 url = "https://music.amazon.com/popular/songs"
 
 def scrape_top_100():
-    # Start browser
     driver = get_driver()
+    print("Opening page...")
     driver.get(url)
     time.sleep(5)
+    print("Page loaded")
 
     song_title = []
     artist_name = []
     image_url = []
     target_count = 100
 
+    start_time = time.time()
+    MAX_SECONDS = 240  # stop after 4 minutes max
+
     while len(song_title) < target_count:
-        # Get current page HTML
+        # safety timeout
+        if time.time() - start_time > MAX_SECONDS:
+            print("Stopping: hit max runtime limit")
+            break
+
+        print(f"Loop start, currently have {len(song_title)} songs")
+
         webpage = driver.page_source
         soup = BeautifulSoup(webpage, 'html.parser')
 
-
         trending_songs = soup.find_all('music-horizontal-item')
+        print(f"Found {len(trending_songs)} items on this view")
 
         for song in trending_songs:
-            # Safely extract attributes
             primary_text = song.get('primary-text', '0. Unknown Title')
-            # Some items may not include a dot, so guard split
             if "." in primary_text:
                 title = primary_text.split(".", 1)[1].strip()
             else:
@@ -57,18 +65,20 @@ def scrape_top_100():
             artist_name.append(artist)
             image_url.append(img)
 
-        print(f"Collected {len(song_title)} songs...")
+            if len(song_title) >= target_count:
+                break
+
+        print(f"Collected {len(song_title)} songs so far")
 
         if len(song_title) >= target_count:
             break
 
-        # Scroll to load more items
         driver.execute_script("window.scrollBy(0, 2000);")
         time.sleep(2)
 
     driver.quit()
+    print("Driver closed")
 
-    # Create DataFrame with the first 100 songs
     songs_data = pd.DataFrame({
         "Track": song_title[:target_count],
         "Artists": artist_name[:target_count],
@@ -77,7 +87,9 @@ def scrape_top_100():
 
     return songs_data
 
+
 def main():
+    print("Scraper main() started")
     songs_data = scrape_top_100()
     print("Final count:", len(songs_data))
 
